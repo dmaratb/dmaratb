@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backoffice api",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmaratb/dmaratb.git"
+  },
+  "author": "Marat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmaratb/dmaratb/issues"
+  },
+  "homepage": "https://github.com/dmaratb/dmaratb#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.2"
+  }
+}
