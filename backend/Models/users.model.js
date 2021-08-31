@@ -14,7 +14,7 @@ const Users = {
 
     /** get user by id, for internal use only */
     get: async (id) => {
-        return await User.findOne({ id: id }).exec();
+        return await User.findOne({ _id: id }).exec();
     }
 }
 

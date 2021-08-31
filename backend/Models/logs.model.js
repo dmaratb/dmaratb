@@ -2,14 +2,14 @@ const { mongoose } = require('./dal');
 const Log = mongoose.model('Log', {
     user: String,
     event: String,
-    timestamp: Date
+    timestamp: { type: Date, default: Date.now },
 });
 
 
 /** logs collection, used instead of log file */
 const Logs = {
     addLog: (user, event) => {
-        const added = new Log({ user: user, event: event, timestamp: Date.now });
+        const added = new Log({ user: user, event: event });
         added.save();
     },
 

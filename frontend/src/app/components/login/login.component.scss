@@ -1,0 +1,12 @@
+.card {
+  max-width: 20rem;
+  margin: 10rem auto;
+
+  input {
+    width: 100%;
+  }
+
+  .invalid {
+    color: orange;
+  }
+}

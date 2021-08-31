@@ -16,8 +16,9 @@ router.put('/', Auth.guard(), async (req, res) => {
 router.get('/', Auth.guard(), async (req, res) => {
     try {
         const data = await Tenants.getAll();
+        const tempData = data.map(t => { return { id: t.id, name: t.name, phone: t.phone, address: t.address, debt: t.debt } });
         res.status(200);
-        res.send(data);
+        res.send(tempData);
     } catch (err) {
         res.status(err.status);
         res.send(err.message);
