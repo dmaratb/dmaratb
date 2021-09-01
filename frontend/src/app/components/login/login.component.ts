@@ -30,15 +30,19 @@ export class LoginComponent implements OnInit {
     }
 
     this.apiService
-      .login(
-        this.loginForm.controls.username.value,
-        this.loginForm.controls.password.value
-      )
+      .login({
+        username: this.loginForm.controls.username.value,
+        password: this.loginForm.controls.password.value,
+      })
       .then(
         (response) => {
+          if (response) {
+            localStorage.setItem('username', response.username);
+          }
+
           this.router.navigate(['/home']);
         },
-        (error) => {
+        () => {
           this.alertPopup.open('incorrect username or password', undefined, {
             duration: 1500,
             horizontalPosition: 'center',

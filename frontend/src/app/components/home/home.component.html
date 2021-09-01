@@ -1,34 +1,37 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12 main-title">
-      <h2>title</h2>
-    </div>
-
-    <div class="card">
-      <button class="btn" (click)="add()">
-        <span class="mdi mdi-plus-circle"></span>
-        <span class="ml-1">add</span>
-      </button>
-    </div>
-
-    <div class="col-12 card table">
-
-      <div class="row search">
-        <!-- Search -->
-        <div class="col-3 d-inline-flex input">
-          <input type="text" class="" placeholder="placeholder" [(ngModel)]="searchText" (ngModelChange)="onChange()">
-          <i class="ri-search-line"></i>
-        </div>
-        <!-- End search -->
-
-        <div class="col"></div>
+    <div class="row col-12">
+      <div class="col-11">
       </div>
+      <div class="col-1">
+        <button mat-raised-button (click)="logout()">{{username}} (logout)</button>
+      </div>
+    </div>
 
-      <div class="header row border">
+    <div class="row col-12 toolbar">
+      <mat-form-field class="col-3" appearance="fill">
+        <mat-label>filter by name, phone or address</mat-label>
+        <input matInput placeholder="Ex. John" [(ngModel)]="searchText" (ngModelChange)="onChange()" type="tel">
+      </mat-form-field>
+
+      <mat-form-field class="col-2" appearance="fill">
+        <mat-label>filter by debt</mat-label>
+        <mat-select [(ngModel)]="filterMode" (ngModelChange)="onChange()">
+          <mat-option value="all">show all</mat-option>
+          <mat-option value="debt">with debt only</mat-option>
+          <mat-option value="clear">without debt</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button (click)="add()">add</button>
+    </div>
+
+    <div class="col-12">
+      <div class="row">
         <div class="col-3">
           name
         </div>
-        <div class="col-2">
+        <div class="col-3">
           phone
         </div>
         <div class="col-3">
@@ -37,17 +40,17 @@
         <div class="col-2">
           debt
         </div>
-        <div class="col-2">
-          actions
+        <div class="col-1">
+
         </div>
       </div>
 
-      <div *ngIf="tenants.length > 0; else emptyBlock" class="body">
-        <div class="row" *ngFor="let tenant of rows | async">
+      <div *ngIf="tenants.length > 0; else emptyBlock">
+        <div class="row data" *ngFor="let tenant of rows | async">
           <div class="col-3">
             {{tenant.name}}
           </div>
-          <div class="col-2">
+          <div class="col-3">
             {{tenant.phone}}
           </div>
           <div class="col-3">
@@ -56,17 +59,11 @@
           <div class="col-2">
             {{tenant.debt}}
           </div>
-          <div class="col-2" ngbDropdown placement="bottom-left">
-            <button class="btn mdi mdi-pencil dropdown-toggle" ngbDropdownToggle></button>
+          <div class="col-1" ngbDropdown placement="bottom-right">
+            <button class="btn dropdown-toggle" ngbDropdownToggle>actions</button>
             <div class="dropdown-menu" ngbDropdownMenu>
-              <a class="dropdown-item" (click)="edit(tenant)">
-                <i class="ri-pencil-fill"></i>
-                edit
-              </a>
-              <a class="dropdown-item delete" (click)="delete(tenant)">
-                <i class="ri-delete-bin-fill"></i>
-                delete
-              </a>
+              <a class="dropdown-item" (click)="edit(tenant)"> edit </a>
+              <a class="dropdown-item delete" (click)="delete(tenant)"> delete </a>
             </div>
           </div>
 
@@ -74,8 +71,8 @@
       </div>
       <ng-template #emptyBlock>
         <div class="empty">
-          <div>empty</div>
-          <div>block</div>
+          <div>no tenants</div>
+          <div>click + to add one</div>
         </div>
       </ng-template>
     </div>

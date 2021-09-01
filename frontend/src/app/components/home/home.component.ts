@@ -1,15 +1,16 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { Tenant } from 'src/app/models/response.model';
-import { ApiService } from 'src/app/services/api.service';
 import {
   MatDialog,
   MatDialogRef,
-  MAT_DIALOG_DATA,
+  MAT_DIALOG_DATA
 } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { Tenant } from 'src/app/models/tenant.model';
+import { ApiService } from 'src/app/services/api.service';
+
 
 export interface EditDialogMode {
   mode: 'add' | 'edit';
@@ -22,37 +23,27 @@ export interface EditDialogMode {
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  username = '';
+  username: string | null = '';
   tenants: Tenant[] = [];
 
+  searchText = '';
+  filterMode: 'all' | 'debt' | 'clear' = 'all';
   private _rows = new BehaviorSubject<Tenant[]>([]);
   rows = this._rows.asObservable();
-  rowsNum = 0;
-  searchText = '';
 
   constructor(
     private apiService: ApiService,
+    private router: Router,
     private alertPopup: MatSnackBar,
     public dialog: MatDialog
   ) {}
 
   ngOnInit() {
+    this.username = localStorage.getItem('username');
     this.getTenants();
   }
 
-  onChange() {
-    const filtered = this.tenants.filter(
-      (t) =>
-        t.name.includes(this.searchText) ||
-        t.phone.includes(this.searchText) ||
-        t.address.includes(this.searchText)
-    );
-
-    this.rowsNum = filtered.length;
-    this._rows.next(filtered);
-  }
-
-  /* actions */
+  /* user actions */
   add() {
     this.dialog
       .open(EditDialog, { data: { mode: 'add' } })
@@ -72,15 +63,40 @@ export class HomeComponent implements OnInit {
       .toPromise()
       .then((data) => {
         if (data) {
+          data.id = tenant.id;
           this.updateTenant(data);
         }
       });
   }
 
-  delete(category: any) {}
+  delete(tenant: Tenant) {
+    this.deleteTenant(tenant.id);
+  }
 
-  expand(category: any) {
-    console.log(category);
+  /* auxiliaries */
+  onChange() {
+    const filtered = this.tenants.filter((t) => {
+      // check search criteria
+      if (
+        !t.name.includes(this.searchText) &&
+        !t.phone.includes(this.searchText) &&
+        !t.address.includes(this.searchText)
+      ) {
+        return false;
+      }
+
+      // filter by debt selection mode
+      switch (this.filterMode) {
+        case 'clear':
+          return t.debt <= 0;
+        case 'debt':
+          return t.debt > 0;
+        default:
+          return true;
+      }
+    });
+
+    this._rows.next(filtered);
   }
 
   /* services */
@@ -130,6 +146,35 @@ export class HomeComponent implements OnInit {
     );
   }
 
+  deleteTenant(id: string) {
+    this.apiService.deleteTenant(id).then(
+      (deleted) => {
+        if (deleted) {
+          const index = this.tenants.findIndex((t) => t.id == deleted.id);
+          if (~index) {
+            this.tenants.splice(index, 1);
+            this.onChange();
+          }
+        }
+      },
+      () => {
+        this.showError();
+      }
+    );
+  }
+
+  logout() {
+    this.apiService.logout().then(
+      () => {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      },
+      () => {
+        this.showError();
+      }
+    );
+  }
+
   showError() {
     this.alertPopup.open('something went wrong', undefined, {
       duration: 1500,
@@ -147,7 +192,7 @@ export class HomeComponent implements OnInit {
   templateUrl: 'edit.dialog.html',
 })
 export class EditDialog {
-  id = '';
+  name = '';
   editForm = this.formBuilder.group({
     name: ['', [Validators.required]],
     phone: ['', [Validators.required]],
@@ -162,7 +207,7 @@ export class EditDialog {
   ) {
     editDialog.afterOpened().subscribe(() => {
       if (data.mode == 'edit') {
-        this.id = data.tenant.id;
+        this.name = data.tenant.name;
         this.editForm = this.formBuilder.group({
           name: [data.tenant.name, [Validators.required]],
           phone: [data.tenant.phone, [Validators.required]],
@@ -179,7 +224,6 @@ export class EditDialog {
     }
 
     this.editDialog.close({
-      id: this.id,
       name: this.editForm.controls.name.value,
       phone: this.editForm.controls.phone.value,
       address: this.editForm.controls.address.value,

@@ -9,9 +9,9 @@ router.post('/login', async (req, res) => {
         const { token, name } = await Auth.login(req.body);
         Logs.addLog(req.body.username, 'login');
 
-        res.cookie('authorization', token, { maxAge: 900000 });
+        res.cookie('authorization', token);
         res.status(200);
-        res.send({ name: name });
+        res.send({ username: name });
     } catch (err) {
         res.status(err.status);
         res.send(err.message);
@@ -26,7 +26,7 @@ router.post('/logout', async (req, res) => {
 
         res.clearCookie('authorization');
         res.status(200);
-        res.send('logged out');
+        res.send();
     } catch (err) {
         res.status(err.status);
         res.send(err.message);

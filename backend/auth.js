@@ -1,6 +1,6 @@
 const { randomBytes, createDecipheriv, createCipheriv } = require('crypto');
 const algorithm = 'aes-256-ctr';
-const key = "very very secret key         ..."
+const key = process.env.SECRET_KEY;
 const iv = randomBytes(16);
 const { Users } = require('./Models/users.model');
 
@@ -50,9 +50,7 @@ const Auth = {
 
     guard: () => {
         return async (req, res, next) => {
-
             const user = await authorise(req.cookies);
-
             if (!user) {
                 res.status(401).json({ message: 'unauthorized' });
                 return;

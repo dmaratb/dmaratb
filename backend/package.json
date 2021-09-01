@@ -4,7 +4,10 @@
   "description": "backoffice api",
   "main": "app.js",
   "scripts": {
-    "start": "node ./app.js"
+    "dev": "NODE_ENV=dev node ./app.js",
+    "prod": "NODE_ENV=prod node ./app.js",
+    "dev-win": "SET NODE_ENV=dev&&node ./app.js",
+    "prod-win": "SET NODE_ENV=prod&&node ./app.js"
   },
   "repository": {
     "type": "git",

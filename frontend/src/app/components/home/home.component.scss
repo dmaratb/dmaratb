@@ -1,0 +1,13 @@
+.empty {
+  text-align: center;
+}
+
+.toolbar {
+  button {
+    max-height: 70%;
+  }
+}
+
+.row.data:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
